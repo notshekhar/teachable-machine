@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <title>Teachable machine</title>
+    <script src="/lib/math.js" charset="utf-8"></script>
+    <script src="/lib/tf.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="tm.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  </head>
+  <body>
+    <div id="body">
+      <div id="cont">
+        <button type="button" name="button" id="train">Start and Retrain</button>
+        <span id="load"></span>
+      </div>
+      <div id="capture_div">
+        <video id="vid"></video>
+      </div>
+      <div id="middle_div">
+        <div id="first">
+          <div id="green_examp"><span id="green">0</span></div><span id="green_confidene">CONFIDENCE</span><div id="green_progress"><div id="gp"></div></div><button id="green_train">Add photo to green</button>
+        </div>
+        <div id="sec">
+          <div id="purple_examp"><span id="purple">0</span></div><span id="purple_confidene">CONFIDENCE</span><div id="purple_progress"><div id="pp"></div></div><button id="purple_train">Add photo to purple</button>
+        </div>
+        <div id="three">
+          <div id="red_examp"><span id="red">0</span></div><span id="red_confidene">CONFIDENCE</span><div id="red_progress"><div id="rp"></div></div><button id="red_train">Add photo to red</button>
+        </div>
+      </div>
+      <div id="result_div">
+
+      </div>
+    </div>
+    <script src="tm.js" charset="utf-8"></script>
+  </body>
+</html>
