@@ -20,6 +20,7 @@ let g = 1
 let r = 1
 let p = 1
 let start = 0
+let f = false
 greenBut.onmousedown = function(){
   let canva = document.createElement("canvas")
   canva.height = 28
@@ -32,8 +33,10 @@ greenBut.onmousedown = function(){
   result = [0,0,0]
   greenCount.innerText = g
   g++
+
 }
 purpleBut.onmousedown = function(){
+
   let canva = document.createElement("canvas")
   canva.height = 28
   canva.width = 28
@@ -46,8 +49,10 @@ purpleBut.onmousedown = function(){
   purpleCount.innerText = p
   p++
 
+
 }
 redBut.onmousedown = function(){
+
   let canva = document.createElement("canvas")
   canva.height = 28
   canva.width = 28
@@ -62,13 +67,14 @@ redBut.onmousedown = function(){
 
 }
 
+
 let cont = document.querySelector("#cont")
 let train = document.querySelector('#train')
 let load = document.querySelector("#load")
-cont.onmouseup = function(){
-  let score = []
-  let sum = 0
 
+
+cont.onmouseup = function(){
+  //predicting
   setInterval(function(){
     let canva = document.createElement("canvas")
     canva.height = 28
@@ -77,7 +83,10 @@ cont.onmouseup = function(){
     ctx.drawImage(video, 0, 0, 28, 28)
     let url = canva.toDataURL()
     math.pixr(url, 28, 28, function(data){
-      let d = data.green
+      let d = new Array()
+      for(let i=0; i<data.green.length; i++){
+        d.push(data.green[i]+data.blue[i]+data.red[i])
+      }
       d = math.cto(d, 255)
       let o = nn.query(d)
       console.log(math.findmax(o), o[math.findmax(o)])
@@ -108,7 +117,10 @@ greenBut.onmouseup = function(){
   for(let i=0; i<images.length; i++){
     let image = images[i]
     math.pixr(image.url, 28, 28, function(data){
-      d = data.green
+      d = new Array()
+      for(let i=0; i<data.green.length; i++){
+       d.push(data.green[i]+data.blue[i]+data.red[i])
+      }
       d = math.cto(d, 255)
       nn.learn(d, image.output)
       let o = nn.query(d)
@@ -133,7 +145,10 @@ redBut.onmouseup = function(){
   for(let i=0; i<images.length; i++){
     let image = images[i]
     math.pixr(image.url, 28, 28, function(data){
-      d = data.green
+      d = new Array()
+      for(let i=0; i<data.green.length; i++){
+        d.push(data.green[i]+data.blue[i]+data.red[i])
+      }
       d = math.cto(d, 255)
       nn.learn(d, image.output)
       let o = nn.query(d)
@@ -158,7 +173,10 @@ purpleBut.onmouseup = function(){
   for(let i=0; i<images.length; i++){
     let image = images[i]
     math.pixr(image.url, 28, 28, function(data){
-      d = data.green
+      d = new Array()
+      for(let i=0; i<data.green.length; i++){
+        d.push(data.green[i]+data.blue[i]+data.red[i])
+      }
       d = math.cto(d, 255)
       nn.learn(d, image.output)
       let o = nn.query(d)
