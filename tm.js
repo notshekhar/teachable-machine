@@ -6,7 +6,7 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
     video.play()
   })
 }
-let nn = new fnn([784,221,3], 0.009999999776482582)
+let nn = new fnn([2352,221,3], 0.009999999776482582)
 let greenCount = document.querySelector('#green')
 let purpleCount = document.querySelector('#purple')
 let redCount = document.querySelector('#red')
@@ -16,54 +16,60 @@ let purpleBut = document.querySelector('#purple_train')
 let redBut = document.querySelector('#red_train')
 let result = [0,0,0]
 let images = new Array()
+
 let g = 1
 let r = 1
 let p = 1
 let start = 0
 let f = false
+let gt, pt, rt
 greenBut.onmousedown = function(){
-  let canva = document.createElement("canvas")
-  canva.height = 28
-  canva.width = 28
-  let ctx = canva.getContext("2d")
-  ctx.drawImage(video, 0, 0, 28, 28)
-  let url = canva.toDataURL()
-  result[0] = 1
-  images.push({output: result, url: url})
-  result = [0,0,0]
-  greenCount.innerText = g
-  g++
+  gt = setInterval(function(){
+    let canva = document.createElement("canvas")
+    canva.height = 28
+    canva.width = 28
+    let ctx = canva.getContext("2d")
+    ctx.drawImage(video, 0, 0, 28, 28)
+    let url = canva.toDataURL()
+    result[0] = 1
+    images.push({output: result, url: url})
+    result = [0,0,0]
+    greenCount.innerText = g
+    g++
+  },100)
 
 }
 purpleBut.onmousedown = function(){
-
-  let canva = document.createElement("canvas")
-  canva.height = 28
-  canva.width = 28
-  let ctx = canva.getContext("2d")
-  ctx.drawImage(video, 0, 0, 28, 28)
-  let url = canva.toDataURL()
-  result[1] = 1
-  images.push({output: result, url: url})
-  result = [0,0,0]
-  purpleCount.innerText = p
-  p++
+  pt = setInterval(function(){
+    let canva = document.createElement("canvas")
+    canva.height = 28
+    canva.width = 28
+    let ctx = canva.getContext("2d")
+    ctx.drawImage(video, 0, 0, 28, 28)
+    let url = canva.toDataURL()
+    result[1] = 1
+    images.push({output: result, url: url})
+    result = [0,0,0]
+    purpleCount.innerText = p
+    p++
+  }, 100)
 
 
 }
 redBut.onmousedown = function(){
-
-  let canva = document.createElement("canvas")
-  canva.height = 28
-  canva.width = 28
-  let ctx = canva.getContext("2d")
-  ctx.drawImage(video, 0, 0, 28, 28)
-  let url = canva.toDataURL()
-  result[2] = 1
-  images.push({output: result, url: url})
-  result = [0,0,0]
-  redCount.innerText = r
-  r++
+  rt = setInterval(function(){
+    let canva = document.createElement("canvas")
+    canva.height = 28
+    canva.width = 28
+    let ctx = canva.getContext("2d")
+    ctx.drawImage(video, 0, 0, 28, 28)
+    let url = canva.toDataURL()
+    result[2] = 1
+    images.push({output: result, url: url})
+    result = [0,0,0]
+    redCount.innerText = r
+    r++
+  }, 100)
 
 }
 
@@ -74,6 +80,35 @@ let load = document.querySelector("#load")
 
 
 cont.onmouseup = function(){
+  //training
+  let score = []
+  for(let i=0; i<images.length; i++){
+    let sum = 0
+    let image = images[i]
+    math.pixr(image.url, 28, 28, function(data){
+      d = new Array()
+      for(let i=0; i<data.green.length; i++){
+        d.push(data.green[i])
+        d.push(data.red[i])
+        d.push(data.blue[i])
+      }
+      d = math.cto(d, 255)
+      nn.learn(d, image.output)
+      let o = nn.query(d)
+      if(math.findmax(image.output) == math.findmax(o)){
+        score.push(1)
+      }else{
+        score.push(0)
+      }
+      console.log(score)
+      for(let i=0; i<score.length; i++){
+        sum+=score[i]
+      }
+      let acc = sum/score.length*100
+      console.log(acc)
+      document.querySelector('#result_div').innerHTML = '<span id="lebal"> accuracy of model: '+ acc +' %</span>'
+    })
+  }
   //predicting
   setInterval(function(){
     let canva = document.createElement("canvas")
@@ -85,7 +120,9 @@ cont.onmouseup = function(){
     math.pixr(url, 28, 28, function(data){
       let d = new Array()
       for(let i=0; i<data.green.length; i++){
-        d.push(data.green[i]+data.blue[i]+data.red[i])
+        d.push(data.green[i])
+        d.push(data.red[i])
+        d.push(data.blue[i])
       }
       d = math.cto(d, 255)
       let o = nn.query(d)
@@ -112,87 +149,11 @@ cont.onmouseup = function(){
 }
 // Math.floor(Math.random() * images.length)
 greenBut.onmouseup = function(){
-  let score = []
-  let sum = 0
-  for(let i=0; i<images.length; i++){
-    let image = images[i]
-    math.pixr(image.url, 28, 28, function(data){
-      d = new Array()
-      for(let i=0; i<data.green.length; i++){
-       d.push(data.green[i]+data.blue[i]+data.red[i])
-      }
-      d = math.cto(d, 255)
-      nn.learn(d, image.output)
-      let o = nn.query(d)
-      if(math.findmax(image.output) == math.findmax(o)){
-        score.push(1)
-      }else{
-        score.push(0)
-      }
-      for(let i=0; i<score.length; i++){
-        sum+=score[i]
-      }
-      let acc = sum/score.length*100
-      console.log(acc)
-      document.querySelector('#result_div').innerHTML = '<span id="lebal"> accuracy of model: '+ acc +' %</span>'
-      sum=0
-    })
-  }
+  clearInterval(gt)
 }
 redBut.onmouseup = function(){
-  let score = []
-  let sum = 0
-  for(let i=0; i<images.length; i++){
-    let image = images[i]
-    math.pixr(image.url, 28, 28, function(data){
-      d = new Array()
-      for(let i=0; i<data.green.length; i++){
-        d.push(data.green[i]+data.blue[i]+data.red[i])
-      }
-      d = math.cto(d, 255)
-      nn.learn(d, image.output)
-      let o = nn.query(d)
-      if(math.findmax(image.output) == math.findmax(o)){
-        score.push(1)
-      }else{
-        score.push(0)
-      }
-      for(let i=0; i<score.length; i++){
-        sum+=score[i]
-      }
-      let acc = sum/score.length*100
-      console.log(acc)
-      document.querySelector('#result_div').innerHTML = '<span id="lebal"> accuracy of model: '+ acc +' %</span>'
-      sum=0
-    })
-  }
+  clearInterval(rt)
 }
 purpleBut.onmouseup = function(){
-  let score = []
-  let sum = 0
-  for(let i=0; i<images.length; i++){
-    let image = images[i]
-    math.pixr(image.url, 28, 28, function(data){
-      d = new Array()
-      for(let i=0; i<data.green.length; i++){
-        d.push(data.green[i]+data.blue[i]+data.red[i])
-      }
-      d = math.cto(d, 255)
-      nn.learn(d, image.output)
-      let o = nn.query(d)
-      if(math.findmax(image.output) == math.findmax(o)){
-        score.push(1)
-      }else{
-        score.push(0)
-      }
-      for(let i=0; i<score.length; i++){
-        sum+=score[i]
-      }
-      let acc = sum/score.length*100
-      console.log(acc)
-      document.querySelector('#result_div').innerHTML = '<span id="lebal"> accuracy of model: '+ acc +' %</span>'
-      sum=0
-    })
-  }
-
+  clearInterval(pt)
 }
