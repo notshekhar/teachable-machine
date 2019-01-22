@@ -2,8 +2,8 @@ let video = document.querySelector('#vid')
 
 if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
   navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
-    video.src = window.URL.createObjectURL(stream)
-    video.play()
+      video.srcObject = stream
+      video.play()
   })
 }
 let nn = new fnn([2352,221,3], 0.009999999776482582)
